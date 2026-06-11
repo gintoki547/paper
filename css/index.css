@@ -1,0 +1,47 @@
+@charset "utf-8";
+
+.intro {
+  position: relative;
+}
+
+.intro::before,
+.works::before,
+.data-section::before,
+.extension::before {
+  content: "";
+  position: absolute;
+  left: clamp(20px, 5vw, 78px);
+  right: clamp(20px, 5vw, 78px);
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125,75,47,0.28), transparent);
+}
+
+.works,
+.system,
+.tour {
+  position: relative;
+}
+
+.data-section {
+  background:
+    linear-gradient(rgba(255,249,234,0.35), rgba(255,249,234,0.15)),
+    radial-gradient(circle at 18% 30%, rgba(79,116,85,0.1), transparent 26%),
+    radial-gradient(circle at 80% 70%, rgba(163,58,44,0.08), transparent 24%);
+}
+
+.work-detail {
+  position: sticky;
+  top: 92px;
+  align-self: start;
+}
+
+.extension-detail {
+  min-height: 320px;
+}
+
+@media (max-width: 1020px) {
+  .work-detail {
+    position: static;
+  }
+}

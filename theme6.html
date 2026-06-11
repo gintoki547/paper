@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汴京烟火·岁时节序 - 交互展示</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="theme-page">
+    <div class="scroll-container">
+        <!-- 导航区 -->
+        <header class="theme-header">
+            <a href="index.html" class="back-btn">← 返回</a>
+            <nav class="theme-nav">
+                <a href="index.html">首页</a> <span>|</span>
+                <a href="theme1.html" >汴河晨食</a> <span>|</span>
+                <a href="theme2.html" >相国万货</a> <span>|</span>
+                <a href="theme3.html" >锦绣衣冠</a> <span>|</span>
+                <a href="theme4.html" >瓦舍百戏</a> <span>|</span>
+                <a href="theme5.html" >州桥夜食</a> <span>|</span>
+                <a href="theme6.html" class="active">岁时节序</a>
+            </nav>
+            <div class="menu-btn">≡</div>
+        </header>
+
+        <!-- 标题区 -->
+        <div class="theme-title-area">
+            <h1 class="theme-main-title">汴京烟火·岁时节序</h1>
+            <div class="theme-sub-title">四时轮转·岁时民俗的狂欢仪式</div>
+        </div>
+
+        <!-- 板块1：宋代经典计时重塑 -->
+        <div class="louke-timer fade-in-text">
+            <div class="louke-icon" style="background:#5a4b41;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;">盘</div>
+            <div class="louke-time">节气罗盘：岁时轮转</div>
+            <div class="louke-desc">斗转星移 节气交替</div>
+        </div>
+
+        <!-- 核心交互区 -->
+        <div class="theme-content">
+            <div class="theme-image-wrapper">
+                <img src="images/theme6.png" alt="岁时节序" class="theme-main-img" onerror="this.style.display='none';this.parentElement.style.background='#eee';this.parentElement.style.height='500px';">
+                <div class="hotspot" style="top: 30%; left: 20%;" data-label="场景探索" onclick="showSidebar('场景考据', '此处还原了《梦华录》中市民的生活习惯与空间特征。')"></div>
+                <div class="hotspot" style="top: 60%; left: 45%;" data-label="人物互动" onclick="showSidebar('人物特征', '服饰、神态及动作皆有考据。')"></div>
+                <div class="hotspot" style="top: 50%; left: 75%;" data-label="物什百态" onclick="showSidebar('器物细节', '从日常用具到生火燃炭皆有规制。')"></div>
+            </div>
+
+            <!-- 右侧边栏 -->
+            <div class="theme-sidebar" id="sidebar" style="display: none;">
+                <div class="sidebar-close" onclick="document.getElementById('sidebar').style.display='none'">×</div>
+                <h3 class="sidebar-title">考据解读</h3>
+                <div class="sidebar-content" id="sidebar-content">
+                </div>
+            </div>
+        </div>
+
+        <!-- 板块2：三段式场景解析 -->
+        <section class="layered-analysis fade-in">
+            <h2 class="section-title">场景三段拆解</h2>
+            <div class="layered-layout">
+                <div class="layered-top">
+                    <img id="main-layer-img-6" src="images/6.1.png" alt="场景解析大图" onerror="this.onerror=null;this.src='images/placeholder.png';">
+                </div>
+                <div class="layered-bottom">
+                    <div class="thumb-card active" onclick="switchLayer(this, 'images/6.1.png', '6')">
+                        <div class="thumb-img-wrapper"><img src="images/6.1.png" onerror="this.style.display='none'"></div>
+                        <p>上段：元宵灯市</p>
+                    </div>
+                    <div class="thumb-card" onclick="switchLayer(this, 'images/6.2.png', '6')">
+                        <div class="thumb-img-wrapper"><img src="images/6.2.png" onerror="this.style.display='none'"></div>
+                        <p>中段：清明游春</p>
+                    </div>
+                    <div class="thumb-card" onclick="switchLayer(this, 'images/6.3.png', '6')">
+                        <div class="thumb-img-wrapper"><img src="images/6.3.png" onerror="this.style.display='none'"></div>
+                        <p>下段：冬至年俗</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 板块4：信息数据卡片 -->
+        <section class="info-data-grid fade-in">
+            <div class="info-card"><div class="info-label">代表节日</div><div class="info-value">元宵/清明/冬至</div></div><div class="info-card"><div class="info-label">核心地标</div><div class="info-value">皇宫内与大街大巷</div></div><div class="info-card"><div class="info-label">民俗习俗</div><div class="info-value">绞缚大山棚/看灯</div></div><div class="info-card"><div class="info-label">主力人群</div><div class="info-value">君民同乐</div></div><div class="info-card"><div class="info-label">市井特征</div><div class="info-value">奇术异能杂耍不断</div></div><div class="info-card"><div class="info-label">营业特点</div><div class="info-value">声闹十余里</div></div>
+        </section>
+
+        <!-- 板块5：市井人物小图鉴 -->
+        <section class="character-scroll-area fade-in">
+            <h2 class="section-title" style="font-size:20px; margin-bottom:20px; text-align:center;">市井人物漫游图鉴</h2>
+            <div class="char-scroll-wrap">
+                <div class="char-card"><h4>观灯游人</h4><div class="char-hover-info">正月十五流连忘返观彩灯</div></div><div class="char-card"><h4>踏青市民</h4><div class="char-hover-info">清明扫墓带游园</div></div><div class="char-card"><h4>祭祀人家</h4><div class="char-hover-info">冬至换上新衣祭拜长辈</div></div><div class="char-card"><h4>节庆孩童</h4><div class="char-hover-info">提着小灯笼的欢闹儿童</div></div>
+            </div>
+        </section>
+
+        <!-- 板块6：物价 / 品类图鉴 -->
+        <section class="fade-in">
+            <h2 class="section-title" style="font-size:20px; text-align:center; padding-top:20px;">宋代风物志签</h2>
+            <div class="items-grid">
+                <div class="item-cell"><div class="item-name">山棚</div><div class="item-desc">巨型山体彩灯架</div></div><div class="item-cell"><div class="item-name">灯毬</div><div class="item-desc">竹篾纱布花灯</div></div><div class="item-cell"><div class="item-name">春盘</div><div class="item-desc">立春卷冷菜春饼</div></div><div class="item-cell"><div class="item-name">馡饦</div><div class="item-desc">冬日抗寒肉汤</div></div><div class="item-cell"><div class="item-name">腊药</div><div class="item-desc">辟邪去灾红包</div></div><div class="item-cell"><div class="item-name">奇术</div><div class="item-desc">吞剑吐火高跷民间绝技</div></div>
+            </div>
+        </section>
+
+        <!-- 板块7：古籍原文对照 -->
+        <section class="bilingual-box fade-in">
+            <div class="bilingual-left">
+                正月十五元宵，大内绞缚山棚，游人集御街两廊下。<br>奇术异能，歌舞百戏，乐声嘈杂十余里。
+            </div>
+            <div class="bilingual-right">
+                <p><strong>【白话浅译】</strong><br>上元节皇城搭起极高台灯阵，游街队伍满人。<br>歌舞百戏音乐甚至声传十里。</p>
+            </div>
+        </section>
+
+        <!-- 板块8：汴京全图交互模块 -->
+        
+    <section class="map-module">
+        <h2 class="section-title" style="text-align:center;margin-bottom:30px;">汴京全图界画落位互动</h2>
+        <div class="map-container">
+            <svg class="map-svg-lines" viewBox="0 0 1000 600">
+                <path d="M100,500 L900,100 M300,600 L500,0 M100,300 L900,400" stroke="#d4c4b7" stroke-width="2" fill="none" />
+                <path d="M0,500 Q300,400 500,400 T1000,500" stroke="#a0c1c8" stroke-width="15" fill="none" opacity="0.6"/> <!-- 汴河 -->
+            </svg>
+            <div class="map-landmark" data-name="汴河/潘楼街" style="top:30%;left:40%;" onclick="openMapPopup(1)">📍</div><div class="map-landmark" data-name="大相国寺" style="top:50%;left:45%;" onclick="openMapPopup(2)">📍</div><div class="map-landmark" data-name="游春园林" style="top:20%;left:70%;" onclick="openMapPopup(3)">📍</div><div class="map-landmark" data-name="桑家瓦子" style="top:60%;left:65%;" onclick="openMapPopup(4)">📍</div><div class="map-landmark" data-name="州桥夜市" style="top:70%;left:50%;" onclick="openMapPopup(5)">📍</div><div class="map-landmark" data-name="宣德楼大内" style="top:40%;left:50%;" onclick="openMapPopup(6)">📍</div>
+        </div>
+        
+        <div class="map-popup-overlay" id="map-popup-1" onclick="if(event.target===this) closeMapPopup(1)">
+            <div class="map-popup">
+                <div class="map-popup-close" onclick="closeMapPopup(1)">✖</div>
+                <div class="map-popup-left">
+                    <img src="images/map_thumb1.png" alt="局部地图" onerror="this.src='images/placeholder.png'">
+                    <span style="margin-top:10px; font-family:'STKaiti', serif; color:#888; font-size:14px;">界画落位</span>
+                </div>
+                <div class="map-popup-right">
+                    <div class="map-popup-title">📌 汴河/潘楼街 - 水门晓市</div>
+                    <div class="map-popup-time">宋制计时标识 » 更鼓</div>
+                    <div class="map-popup-content">
+                        <div class="map-popup-guwen">考据源：<br>《梦华录》卷注：<br>诸门桥市井已开，卖粥羹、点心、茶汤。直至早饭罢方罢。</div>
+                        <div class="map-popup-baihua">
+                            <strong style="color:#b86a54;">【白话解构与说明】</strong><br><br>
+                            桥市早已开张，人们排队喝粥羹热茶，市井水运繁忙。
+                        </div>
+                    </div>
+                    <a href="theme1.html" class="map-btn">步入此境 · 探索详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-popup-overlay" id="map-popup-2" onclick="if(event.target===this) closeMapPopup(2)">
+            <div class="map-popup">
+                <div class="map-popup-close" onclick="closeMapPopup(2)">✖</div>
+                <div class="map-popup-left">
+                    <img src="images/map_thumb2.png" alt="局部地图" onerror="this.src='images/placeholder.png'">
+                    <span style="margin-top:10px; font-family:'STKaiti', serif; color:#888; font-size:14px;">界画落位</span>
+                </div>
+                <div class="map-popup-right">
+                    <div class="map-popup-title">📌 大相国寺 - 万姓交易</div>
+                    <div class="map-popup-time">宋制计时标识 » 日晷</div>
+                    <div class="map-popup-content">
+                        <div class="map-popup-guwen">考据源：<br>《梦华录》卷注：<br>每月五次开放，万姓交易。飞禽珍玩无所不有。</div>
+                        <div class="map-popup-baihua">
+                            <strong style="color:#b86a54;">【白话解构与说明】</strong><br><br>
+                            每月五日庙会大集，商贾云集，从古玩百货到飞禽走兽应有尽有。
+                        </div>
+                    </div>
+                    <a href="theme2.html" class="map-btn">步入此境 · 探索详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-popup-overlay" id="map-popup-3" onclick="if(event.target===this) closeMapPopup(3)">
+            <div class="map-popup">
+                <div class="map-popup-close" onclick="closeMapPopup(3)">✖</div>
+                <div class="map-popup-left">
+                    <img src="images/map_thumb3.png" alt="局部地图" onerror="this.src='images/placeholder.png'">
+                    <span style="margin-top:10px; font-family:'STKaiti', serif; color:#888; font-size:14px;">界画落位</span>
+                </div>
+                <div class="map-popup-right">
+                    <div class="map-popup-title">📌 游春园林 - 锦绣春游</div>
+                    <div class="map-popup-time">宋制计时标识 » 漏壶</div>
+                    <div class="map-popup-content">
+                        <div class="map-popup-guwen">考据源：<br>《梦华录》卷注：<br>士女靓妆，遍游园林，罗绮飘香，车马阗塞。</div>
+                        <div class="map-popup-baihua">
+                            <strong style="color:#b86a54;">【白话解构与说明】</strong><br><br>
+                            春日男女游林散心，身着各色宋服锦绣罗绮，到处阵阵异香。
+                        </div>
+                    </div>
+                    <a href="theme3.html" class="map-btn">步入此境 · 探索详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-popup-overlay" id="map-popup-4" onclick="if(event.target===this) closeMapPopup(4)">
+            <div class="map-popup">
+                <div class="map-popup-close" onclick="closeMapPopup(4)">✖</div>
+                <div class="map-popup-left">
+                    <img src="images/map_thumb4.png" alt="局部地图" onerror="this.src='images/placeholder.png'">
+                    <span style="margin-top:10px; font-family:'STKaiti', serif; color:#888; font-size:14px;">界画落位</span>
+                </div>
+                <div class="map-popup-right">
+                    <div class="map-popup-title">📌 桑家瓦子 - 勾栏演艺</div>
+                    <div class="map-popup-time">宋制计时标识 » 暮钟</div>
+                    <div class="map-popup-content">
+                        <div class="map-popup-guwen">考据源：<br>《梦华录》卷注：<br>在京瓦肆伎艺，讲史、杂剧、傀儡戏，不以风雨寒暑。</div>
+                        <div class="map-popup-baihua">
+                            <strong style="color:#b86a54;">【白话解构与说明】</strong><br><br>
+                            瓦舍中戏棚林立，看客们不受天气影响，日夜看戏赏玩倒彩。
+                        </div>
+                    </div>
+                    <a href="theme4.html" class="map-btn">步入此境 · 探索详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-popup-overlay" id="map-popup-5" onclick="if(event.target===this) closeMapPopup(5)">
+            <div class="map-popup">
+                <div class="map-popup-close" onclick="closeMapPopup(5)">✖</div>
+                <div class="map-popup-left">
+                    <img src="images/map_thumb5.png" alt="局部地图" onerror="this.src='images/placeholder.png'">
+                    <span style="margin-top:10px; font-family:'STKaiti', serif; color:#888; font-size:14px;">界画落位</span>
+                </div>
+                <div class="map-popup-right">
+                    <div class="map-popup-title">📌 州桥夜市 - 深夜食棚</div>
+                    <div class="map-popup-time">宋制计时标识 » 香篆</div>
+                    <div class="map-popup-content">
+                        <div class="map-popup-guwen">考据源：<br>《梦华录》卷注：<br>夜市直至三更尽，卖沙糖冰雪冷元子通宵不绝。</div>
+                        <div class="map-popup-baihua">
+                            <strong style="color:#b86a54;">【白话解构与说明】</strong><br><br>
+                            州桥和御街夜市人潮涌动，商贩连夜售卖各种解馋的水果甜品与冷元子。
+                        </div>
+                    </div>
+                    <a href="theme5.html" class="map-btn">步入此境 · 探索详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-popup-overlay" id="map-popup-6" onclick="if(event.target===this) closeMapPopup(6)">
+            <div class="map-popup">
+                <div class="map-popup-close" onclick="closeMapPopup(6)">✖</div>
+                <div class="map-popup-left">
+                    <img src="images/map_thumb6.png" alt="局部地图" onerror="this.src='images/placeholder.png'">
+                    <span style="margin-top:10px; font-family:'STKaiti', serif; color:#888; font-size:14px;">界画落位</span>
+                </div>
+                <div class="map-popup-right">
+                    <div class="map-popup-title">📌 宣德楼大内 - 皇城节序</div>
+                    <div class="map-popup-time">宋制计时标识 » 罗盘</div>
+                    <div class="map-popup-content">
+                        <div class="map-popup-guwen">考据源：<br>《梦华录》卷注：<br>大内绞缚山棚，游人集御街两廊下，奇术异能连番。</div>
+                        <div class="map-popup-baihua">
+                            <strong style="color:#b86a54;">【白话解构与说明】</strong><br><br>
+                            皇城之下搭建如山彩灯，百姓和皇帝同赴元宵盛会，狂欢达旦。
+                        </div>
+                    </div>
+                    <a href="theme6.html" class="map-btn">步入此境 · 探索详情</a>
+                </div>
+            </div>
+        </div>
+        
+    </section>
+    
+
+        <!-- 板块9：宋式市井招牌词云 -->
+        <section class="wordcloud-module fade-in">
+            <div class="wordcloud-sidebar">
+                <div class="wc-filter active" onclick="filterWordCloud('all')">综合热门</div>
+                <div class="wc-filter" onclick="filterWordCloud('food')">饮食摊肆</div>
+                <div class="wc-filter" onclick="filterWordCloud('play')">文玩商贾</div>
+                <div class="wc-filter" onclick="filterWordCloud('show')">瓦舍百戏</div>
+            </div>
+            <div class="wordcloud-canvas">
+                <div class="wc-signboard type-show" style="font-size:25px;">山棚<div class="wc-tooltip">出自《东京梦华录》场景：山棚</div></div><div class="wc-signboard type-play" style="font-size:24px;">灯毬<div class="wc-tooltip">出自《东京梦华录》场景：灯毬</div></div><div class="wc-signboard type-food" style="font-size:20px;">春盘<div class="wc-tooltip">出自《东京梦华录》场景：春盘</div></div><div class="wc-signboard type-food" style="font-size:19px;">馡饦<div class="wc-tooltip">出自《东京梦华录》场景：馡饦</div></div><div class="wc-signboard type-show" style="font-size:27px;">奇术吐火<div class="wc-tooltip">出自《东京梦华录》场景：奇术吐火</div></div><div class="wc-signboard type-play" style="font-size:17px;">腊药<div class="wc-tooltip">出自《东京梦华录》场景：腊药</div></div>
+            </div>
+        </section>
+
+        <!-- 板块10：宋式书卷水平滚动推荐栏 -->
+        <section class="scroll-recommends fade-in">
+            <h2 class="section-title" style="font-size:24px; text-align:center; padding-bottom:30px; letter-spacing:4px;">梦华录·其余卷宗延伸推荐</h2>
+            <div class="scroll-track">
+                
+            <div class="mini-scroll-book " onclick="showBookDetail(1, this)">
+                <div class="book-cover-title">卷二·东角楼街巷</div>
+                <div class="book-hover-peel"></div>
+            </div>
+        
+            <div class="mini-scroll-book " onclick="showBookDetail(2, this)">
+                <div class="book-cover-title">卷三·相国寺万姓</div>
+                <div class="book-hover-peel"></div>
+            </div>
+        
+            <div class="mini-scroll-book " onclick="showBookDetail(3, this)">
+                <div class="book-cover-title">卷七·清明节</div>
+                <div class="book-hover-peel"></div>
+            </div>
+        
+            <div class="mini-scroll-book " onclick="showBookDetail(4, this)">
+                <div class="book-cover-title">卷五·京瓦伎艺</div>
+                <div class="book-hover-peel"></div>
+            </div>
+        
+            <div class="mini-scroll-book " onclick="showBookDetail(5, this)">
+                <div class="book-cover-title">卷二·州桥夜市</div>
+                <div class="book-hover-peel"></div>
+            </div>
+        
+            <div class="mini-scroll-book highlight" onclick="showBookDetail(6, this)">
+                <div class="book-cover-title">卷六·上元节</div>
+                <div class="book-hover-peel"></div>
+            </div>
+        
+            </div>
+            <div class="b-detail-wrapper">
+                
+            <div class="b-detail-item " id="b-detail-1">
+                <div class="b-detail-title">卷二·东角楼街巷 (相关卷宗)</div>
+                <div class="b-detail-flex">
+                    <div class="b-detail-text">
+                        <p><strong>《东京梦华录》古本记录：</strong></p>
+                        <p>该卷详细拆解了对应城市生活的内容，通过孟元老的视角，还原了宋代从地缘、饮食、穿着到社会结构的完整画卷。</p>
+                        <span class="b-tag-link">📌 本卷延伸阅读：高度关联：汴河晨食/潘楼早市</span>
+                    </div>
+                    <div class="b-detail-quote">原文摘录：东角楼街巷，城南城北皆聚集百货</div>
+                </div>
+            </div>
+        
+            <div class="b-detail-item " id="b-detail-2">
+                <div class="b-detail-title">卷三·相国寺万姓 (相关卷宗)</div>
+                <div class="b-detail-flex">
+                    <div class="b-detail-text">
+                        <p><strong>《东京梦华录》古本记录：</strong></p>
+                        <p>该卷详细拆解了对应城市生活的内容，通过孟元老的视角，还原了宋代从地缘、饮食、穿着到社会结构的完整画卷。</p>
+                        <span class="b-tag-link">📌 本卷延伸阅读：高度关联：相国万货</span>
+                    </div>
+                    <div class="b-detail-quote">原文摘录：大相国寺每月五次开放万姓交易</div>
+                </div>
+            </div>
+        
+            <div class="b-detail-item " id="b-detail-3">
+                <div class="b-detail-title">卷七·清明节 (相关卷宗)</div>
+                <div class="b-detail-flex">
+                    <div class="b-detail-text">
+                        <p><strong>《东京梦华录》古本记录：</strong></p>
+                        <p>该卷详细拆解了对应城市生活的内容，通过孟元老的视角，还原了宋代从地缘、饮食、穿着到社会结构的完整画卷。</p>
+                        <span class="b-tag-link">📌 本卷延伸阅读：高度关联：锦绣衣冠</span>
+                    </div>
+                    <div class="b-detail-quote">原文摘录：清明日，士女靓妆，遍游园林</div>
+                </div>
+            </div>
+        
+            <div class="b-detail-item " id="b-detail-4">
+                <div class="b-detail-title">卷五·京瓦伎艺 (相关卷宗)</div>
+                <div class="b-detail-flex">
+                    <div class="b-detail-text">
+                        <p><strong>《东京梦华录》古本记录：</strong></p>
+                        <p>该卷详细拆解了对应城市生活的内容，通过孟元老的视角，还原了宋代从地缘、饮食、穿着到社会结构的完整画卷。</p>
+                        <span class="b-tag-link">📌 本卷延伸阅读：高度关联：瓦舍百戏</span>
+                    </div>
+                    <div class="b-detail-quote">原文摘录：大小勾栏数千座，其中桑家瓦子最大</div>
+                </div>
+            </div>
+        
+            <div class="b-detail-item " id="b-detail-5">
+                <div class="b-detail-title">卷二·州桥夜市 (相关卷宗)</div>
+                <div class="b-detail-flex">
+                    <div class="b-detail-text">
+                        <p><strong>《东京梦华录》古本记录：</strong></p>
+                        <p>该卷详细拆解了对应城市生活的内容，通过孟元老的视角，还原了宋代从地缘、饮食、穿着到社会结构的完整画卷。</p>
+                        <span class="b-tag-link">📌 本卷延伸阅读：高度关联：州桥夜食</span>
+                    </div>
+                    <div class="b-detail-quote">原文摘录：州桥夜市直至三更尽，才五更又复开张</div>
+                </div>
+            </div>
+        
+            <div class="b-detail-item active" id="b-detail-6">
+                <div class="b-detail-title">卷六·上元节 (相关卷宗)</div>
+                <div class="b-detail-flex">
+                    <div class="b-detail-text">
+                        <p><strong>《东京梦华录》古本记录：</strong></p>
+                        <p>该卷详细拆解了对应城市生活的内容，通过孟元老的视角，还原了宋代从地缘、饮食、穿着到社会结构的完整画卷。</p>
+                        <span class="b-tag-link">📌 本卷延伸阅读：高度关联：岁时节序</span>
+                    </div>
+                    <div class="b-detail-quote">原文摘录：正月十五元宵，大内前缚山棚灯毬</div>
+                </div>
+            </div>
+        
+            </div>
+        </section>
+
+        <!-- 脚注 -->
+        <div class="theme-footer" style="text-align:center; padding:40px 0; color:#888;">
+            <span>项目展示版</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span>重构与扩充完毕</span>
+        </div>
+    </div>
+
+    <script>
+        // Existing functions
+        function showSidebar(title, text) {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                const content = document.getElementById('sidebar-content');
+                content.innerHTML = `<h4>$岁时节序</h4><p>${text}</p><p style="margin-top:20px; font-size:12px; color:#aaa;">图数据来源：《东京梦华录》</p>`;
+                sidebar.style.display = 'block';
+            }
+        }
+
+        function switchLayer(element, imgPath, baseId) {
+            const cards = element.parentElement.querySelectorAll('.thumb-card');
+            cards.forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+            const mainImg = document.getElementById('main-layer-img-' + baseId);
+            if (mainImg) {
+                mainImg.style.opacity = '0';
+                setTimeout(() => { mainImg.src = imgPath; mainImg.style.opacity = '1'; }, 300);
+            }
+        }
+        
+        // Map Popup Functions
+        function openMapPopup(id) {
+            document.querySelectorAll('.map-popup-overlay').forEach(el => el.classList.remove('active'));
+            document.getElementById('map-popup-' + id).classList.add('active');
+        }
+        function closeMapPopup(id) {
+            document.getElementById('map-popup-' + id).classList.remove('active');
+        }
+
+        // Word Cloud Filter
+        function filterWordCloud(category) {
+            document.querySelectorAll('.wc-filter').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            document.querySelectorAll('.wc-signboard').forEach(el => {
+                if (category === 'all' || el.classList.contains('type-' + category)) {
+                    el.classList.remove('fade-out');
+                } else {
+                    el.classList.add('fade-out');
+                }
+            });
+        }
+
+        // Scroll Bookshelf
+        function showBookDetail(id, el) {
+            document.querySelectorAll('.mini-scroll-book').forEach(b => b.classList.remove('highlight'));
+            el.classList.add('highlight');
+            document.querySelectorAll('.b-detail-item').forEach(d => d.classList.remove('active'));
+            document.getElementById('b-detail-' + id).classList.add('active');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in, .fade-in-text, .layered-analysis, .map-module, .wordcloud-module, .scroll-recommends').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.8s ease-out';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

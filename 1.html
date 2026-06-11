@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汴京烟火·《东京梦华录》信息可视化设计</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif SC', 'Georgia', 'STKaiti', 'KaiTi', 'SimSun', serif;
+            background-color: #f5eedc;
+            color: #2c251a;
+            background-image: radial-gradient(rgba(197, 168, 128, 0.15) 1px, transparent 0),
+                              radial-gradient(rgba(197, 168, 128, 0.15) 1px, transparent 0);
+            background-size: 8px 8px;
+            background-position: 0 0, 4px 4px;
+        }
+
+        /* Paper style scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1e7cb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5a880;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a3332d;
+        }
+
+        /* Vintage layout paper overlay */
+        .paper-card {
+            background: #fdfaf2;
+            border: 1px solid #e1d2b7;
+            box-shadow: 0 4px 15px rgba(44, 37, 26, 0.05);
+            position: relative;
+        }
+        .paper-card::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1px dashed rgba(197, 168, 128, 0.4);
+            pointer-events: none;
+        }
+
+        /* Song Dynasty Theme Colors */
+        .text-song-red { color: #a3332d; }
+        .bg-song-red { background-color: #a3332d; }
+        .border-song-red { border-color: #a3332d; }
+
+        .text-song-green { color: #2d5c4b; }
+        .bg-song-green { background-color: #2d5c4b; }
+        .border-song-green { border-color: #2d5c4b; }
+
+        .text-song-bronze { color: #c5a880; }
+        .border-song-bronze { border-color: #c5a880; }
+
+        .designed-compass-stage {
+            position: relative;
+            display: grid;
+            place-items: center;
+            isolation: isolate;
+        }
+        .designed-compass-stage::before {
+            content: "";
+            position: absolute;
+            inset: 6%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.58), rgba(197,168,128,0.16) 62%, transparent 70%);
+            filter: blur(8px);
+            z-index: -1;
+        }
+        .designed-compass {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 18px 26px rgba(73, 48, 25, 0.22));
+            transform: rotate(var(--compass-angle, 0deg)) scale(1);
+            transition: opacity 0.34s ease, transform 0.9s cubic-bezier(0.2, 0.75, 0.2, 1), filter 0.34s ease;
+            cursor: pointer;
+        }
+        .designed-compass.is-changing {
+            opacity: 0.35;
+            transform: rotate(var(--compass-angle, 0deg)) scale(0.94);
+            filter: blur(2px) drop-shadow(0 10px 20px rgba(73, 48, 25, 0.16));
+        }
+        .compass-orbit {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 1px solid rgba(163, 51, 45, 0.18);
+            animation: slowOrbit 16s linear infinite;
+            pointer-events: none;
+        }
+        .compass-orbit::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #a3332d;
+            box-shadow: 0 0 18px rgba(163, 51, 45, 0.45);
+        }
+        @keyframes slowOrbit {
+            to { transform: rotate(360deg); }
+        }
+        .map-art-stage {
+            position: relative;
+            height: 230px;
+            overflow: hidden;
+            border: 1px solid #d6cb9a;
+            border-radius: 12px;
+            background: #f2ebce;
+            box-shadow: inset 0 0 28px rgba(95, 69, 38, 0.1);
+        }
+        .map-art-stage::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(253,250,242,0.82), transparent 16%, transparent 78%, rgba(253,250,242,0.64));
+            pointer-events: none;
+        }
+        .map-art-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: scale(1.02);
+            transition: opacity 0.34s ease, transform 0.8s cubic-bezier(0.2, 0.75, 0.2, 1), filter 0.34s ease;
+        }
+        .map-art-image.overview {
+            object-fit: contain;
+            padding: 8px;
+            background: #fffaf0;
+        }
+        .map-art-image.is-changing {
+            opacity: 0.35;
+            transform: scale(1.08) translateY(6px);
+            filter: blur(2px);
+        }
+        .map-scan {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent, rgba(163, 51, 45, 0.18), transparent);
+            transform: translateY(-100%);
+            animation: mapScan 3.6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes mapScan {
+            0%, 20% { transform: translateY(-100%); }
+            58%, 100% { transform: translateY(100%); }
+        }
+        .map-caption {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            z-index: 2;
+            max-width: calc(100% - 24px);
+            padding: 8px 11px;
+            border: 1px solid rgba(255,249,234,0.75);
+            border-radius: 8px;
+            background: rgba(64, 42, 24, 0.72);
+            color: #fff8e9;
+            font-size: 12px;
+            font-weight: 800;
+            backdrop-filter: blur(8px);
+        }
+        .map-chip-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .map-chip {
+            border: 1px solid #d6cb9a;
+            border-radius: 999px;
+            background: rgba(253,250,242,0.72);
+            color: #5b4634;
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: 800;
+            transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+        }
+        .map-chip:hover,
+        .map-chip.active {
+            transform: translateY(-2px);
+            border-color: #a3332d;
+            background: #a3332d;
+            color: #fff8e9;
+        }
+        @media (max-width: 640px) {
+            .hero-title {
+                letter-spacing: 2px;
+            }
+            .hero-title span:nth-child(2) {
+                font-size: 1rem;
+                letter-spacing: 1px;
+                white-space: normal;
+                max-width: 260px;
+                line-height: 1.32;
+            }
+            .header-stats {
+                width: 100%;
+                gap: 0;
+                justify-content: space-between;
+                font-size: 11px;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            .header-stats > div {
+                min-width: 0;
+                flex: 1;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+            .header-stats span {
+                line-height: 1.25;
+            }
+            .header-stats .font-bold {
+                display: block;
+                font-size: 11px;
+                overflow-wrap: anywhere;
+            }
+            .compass-button-grid,
+            .map-chip-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            .compass-button-grid button,
+            .map-chip {
+                font-size: 10px;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+            .map-art-stage {
+                height: 190px;
+            }
+        }
+
+        /* Ink Drop Animation */
+        @keyframes inkDrop {
+            0% { transform: scale(0.1); opacity: 0; filter: blur(5px); }
+            50% { opacity: 0.6; filter: blur(1px); }
+            100% { transform: scale(1.5); opacity: 0; filter: blur(10px); }
+        }
+        .ink-ripple {
+            animation: inkDrop 1s ease-out infinite;
+        }
+
+        .hero-title {
+            line-height: 1.1;
+            letter-spacing: 6px;
+            color: #7a3b1b;
+            text-shadow: 0 2px 6px rgba(60, 40, 20, 0.15);
+        }
+        .hero-title span {
+            display: block;
+            animation: inkReveal 1.4s ease-out both;
+        }
+        .hero-title span:nth-child(2) {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            margin-top: 8px;
+            color: #a3332d;
+            animation-delay: 0.2s;
+        }
+        @keyframes inkReveal {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden antialiased">
+
+    <!-- Top Calligraphy Header -->
+    <header class="relative py-6 px-4 md:px-12 border-b border-song-bronze bg-[#faf6ea] z-10">
+        <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22><path d=%22M30 20 C 40 40, 60 40, 70 20 C 80 50, 20 50, 30 20 Z%22 fill=%22none%22 stroke=%22%23c5a880%22 stroke-width=%220.5%22/></svg>')] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <!-- Top Nav & Seal -->
+            <div class="flex items-center gap-4 relative">
+                <a href="index.html" class="absolute -top-6 -left-2 flex items-center gap-1 text-xs text-stone-500 hover:text-song-red transition-colors" title="返回主页">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    返回总览
+                </a>
+                <div class="w-12 h-12 flex items-center justify-center bg-song-red text-white font-bold text-lg rounded-sm shadow-md border border-amber-900 leading-tight select-none">
+                    清雅<br>梦华
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black hero-title">
+                        <span>汴京烟火</span>
+                        <span>《东京梦华录》信息可视化设计</span>
+                    </h1>
+                    <p class="text-xs md:text-sm text-stone-500 mt-1">壹卷东京梦华录 · 半部汴京烟火史 | 信息艺术设计复刻</p>
+                </div>
+            </div>
+
+            <!-- Header Quick Stats -->
+            <div class="header-stats flex items-center gap-6 text-sm text-stone-700 bg-[#f4edd8] px-4 py-2 rounded-lg border border-[#e5d9b8]">
+                <div class="text-center border-r border-[#d4c6a1] pr-4">
+                    <span class="block text-xs text-stone-500">时空定位</span>
+                    <span class="font-bold text-song-red">北宋 · 宣德年间</span>
+                </div>
+                <div class="text-center border-r border-[#d4c6a1] pr-4">
+                    <span class="block text-xs text-stone-500">当前活跃坊市</span>
+                    <span class="font-bold text-song-green" id="active-market-tag">虹桥码头</span>
+                </div>
+                <div class="text-center">
+                    <span class="block text-xs text-stone-500">我的钱囊</span>
+                    <span class="font-bold text-amber-800" id="global-wallet">0 文铜钱</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Side Column: Chrono Compass & Map (4 cols on large screens) -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Dial Compass Panel -->
+            <div class="paper-card p-4 rounded-xl flex flex-col items-center">
+                <div class="w-full flex justify-between items-center mb-4 border-b border-amber-100 pb-2">
+                    <h2 class="font-bold text-stone-800 flex items-center gap-1.5">
+                        <svg class="w-5 h-5 text-song-red" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path></svg>
+                        汴京六时罗盘
+                    </h2>
+                    <span class="text-xs text-stone-500">点击轮盘或时辰即可流转时空</span>
+                </div>
+
+                <!-- Designed Compass -->
+                <div class="designed-compass-stage relative w-64 h-64 md:w-72 md:h-72 my-2">
+                    <span class="compass-orbit"></span>
+                    <img id="chrono-compass" class="designed-compass" src="images/game/compass-1.png" alt="汴京烟火汴河晨食罗盘" onclick="switchChapter(state.activeChapter === 6 ? 1 : state.activeChapter + 1)">
+                </div>
+
+                <!-- 6 Quick Selection Buttons -->
+                <div class="compass-button-grid w-full grid grid-cols-3 gap-2 mt-2">
+                    <button onclick="switchChapter(1)" id="btn-ch1" class="py-1 px-2 border rounded text-xs transition font-bold border-song-red text-song-red bg-amber-50">① 卯时晨食</button>
+                    <button onclick="switchChapter(2)" id="btn-ch2" class="py-1 px-2 border rounded text-xs transition font-bold border-stone-300 text-stone-700 hover:bg-stone-50">② 巳时万货</button>
+                    <button onclick="switchChapter(3)" id="btn-ch3" class="py-1 px-2 border rounded text-xs transition font-bold border-stone-300 text-stone-700 hover:bg-stone-50">③ 午末衣冠</button>
+                    <button onclick="switchChapter(4)" id="btn-ch4" class="py-1 px-2 border rounded text-xs transition font-bold border-stone-300 text-stone-700 hover:bg-stone-50">④ 申酉百戏</button>
+                    <button onclick="switchChapter(5)" id="btn-ch5" class="py-1 px-2 border rounded text-xs transition font-bold border-stone-300 text-stone-700 hover:bg-stone-50">⑤ 戌亥夜市</button>
+                    <button onclick="switchChapter(6)" id="btn-ch6" class="py-1 px-2 border rounded text-xs transition font-bold border-stone-300 text-stone-700 hover:bg-stone-50">⑥ 岁时节序</button>
+                </div>
+            </div>
+
+            <!-- Hand-drawn style SVG Map of Bianjing -->
+            <div class="paper-card p-4 rounded-xl flex flex-col">
+                <div class="w-full flex justify-between items-center mb-2 border-b border-amber-100 pb-2">
+                    <h2 class="font-bold text-stone-800 flex items-center gap-1.5">
+                        <svg class="w-5 h-5 text-song-green" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"></path></svg>
+                        汴京六图舆图交互投影
+                    </h2>
+                    <span class="text-xs text-stone-500">红色标注区为当前活跃范围</span>
+                </div>
+
+                <!-- Designed Interactive Map -->
+                <div class="map-art-stage">
+                    <img id="bianjing-map-image" class="map-art-image" src="images/game/map-state-1.png" alt="汴京烟火汴河晨食地图高亮">
+                    <div class="map-scan"></div>
+                    <div class="map-caption" id="map-caption">① 汴河晨食：州桥与汴河一带的清晨饮食动线</div>
+                </div>
+                <div class="map-chip-grid" aria-label="地图章节切换">
+                    <button class="map-chip active" id="map-chip-1" onclick="switchChapter(1)">汴河晨食</button>
+                    <button class="map-chip" id="map-chip-2" onclick="switchChapter(2)">相国万货</button>
+                    <button class="map-chip" id="map-chip-3" onclick="switchChapter(3)">锦绣衣冠</button>
+                    <button class="map-chip" id="map-chip-4" onclick="switchChapter(4)">瓦舍百戏</button>
+                    <button class="map-chip" id="map-chip-5" onclick="switchChapter(5)">州桥夜食</button>
+                    <button class="map-chip" id="map-chip-6" onclick="switchChapter(6)">岁时节序</button>
+                </div>
+                <div class="mt-2 text-[11px] text-stone-500 flex justify-between items-center bg-amber-50 p-2 rounded border border-amber-100">
+                    <span>提示：点击罗盘、地图标签或章节按钮，地图会切换为对应的设计高亮状态。</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Center Main Content Dashboard Area (8 cols on large screens) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- Dynamic Scenic Layout (Replaces content based on Switcher) -->
+            <div id="scenic-container" class="transition-all duration-300">
+                <!-- Content will be injected dynamically via JS render engine -->
+            </div>
+
+            <!-- Spender Simulator Calculator Box (Always Visible underneath) -->
+            <div class="paper-card p-6 rounded-xl">
+                <div class="border-b border-song-bronze pb-3 mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-song-red flex items-center gap-2">
+                            <span>🏮</span> 汴京游历记 · 一日游消费算账房
+                        </h2>
+                        <p class="text-xs text-stone-500 mt-0.5">选择您在汴京的扮演身份，在各场景购买吃喝玩乐，实时测算大宋民生购买力</p>
+                    </div>
+
+                    <!-- Role selector -->
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-bold text-stone-600">扮演角色:</span>
+                        <select id="user-role" onchange="changeRole()" class="bg-[#faf6ea] border border-song-bronze rounded px-2 py-1 text-xs font-bold text-stone-800 cursor-pointer">
+                            <option value="merchant">市井货郎 (商人) - 钱囊较薄</option>
+                            <option value="lady">大家闺秀 (仕女) - 锦衣玉食</option>
+                            <option value="scholar">青衫书生 (文人) - 附庸风雅</option>
+                            <option value="youth">勾栏常客 (少年) - 游手好闲</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <!-- Invoice breakdown -->
+                    <div class="md:col-span-7 flex flex-col gap-3">
+                        <div class="bg-[#faf6ea] border border-[#e8dfc5] p-3 rounded-lg flex flex-col gap-2 min-h-[120px]">
+                            <span class="text-xs text-stone-500 font-bold border-b border-stone-200 pb-1">🗂️ 梦华消费清单:</span>
+                            <div id="expense-list" class="flex flex-wrap gap-2 py-1">
+                                <!-- Dynamic items -->
+                                <span class="text-xs text-stone-400 italic">空空如也，请在上方各个场景中选购美食、珍宝或门票。</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-[#fdfaf2] p-2.5 rounded border border-amber-100">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-song-red"></span>
+                                <span class="text-xs text-stone-600 font-bold">总花费: <span id="calc-total" class="text-sm text-song-red font-black">0</span> 文铜钱</span>
+                            </div>
+                            <button onclick="clearExpense()" class="text-xs text-stone-500 hover:text-song-red underline transition">清空算账单</button>
+                        </div>
+                    </div>
+
+                    <!-- Buying power comparison -->
+                    <div class="md:col-span-5 bg-amber-50 p-4 rounded-lg border border-amber-200 flex flex-col justify-between">
+                        <h4 class="text-xs font-bold text-stone-800 border-b border-amber-200 pb-1.5 mb-2 flex items-center gap-1">
+                            📊 购买力大挑战（物价对比）
+                        </h4>
+                        <div class="space-y-2 text-xs text-stone-700" id="buying-power-info">
+                            <p>1文钱 ≒ 现代约 0.6 元人民币</p>
+                            <p>💰 <span class="font-bold text-amber-800">100文铜钱</span> 可吃一顿极丰盛的市井宴席。</p>
+                            <p>💼 汴京普通搬运工、轿夫一日收入约 <span class="font-bold text-amber-800">150 ~ 200文</span>。</p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-amber-200 text-center">
+                            <span class="text-[11px] text-stone-500 font-bold block" id="spend-verdict">当前游历评定：节衣缩食，初来乍到</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gemini Author Meng Yuanlao Chatbox -->
+            <div class="paper-card p-6 rounded-xl bg-[#fbf8ed]">
+                <div class="flex items-start gap-4 border-b border-amber-200 pb-4 mb-4">
+                    <!-- Character Avatar Container -->
+                    <div class="relative flex-shrink-0">
+                        <div class="w-16 h-16 rounded-full border-2 border-song-red overflow-hidden bg-amber-100 flex items-center justify-center">
+                            <!-- Draw simple brush illustration with CSS/SVG of ancient Scholar -->
+                            <svg class="w-12 h-12 text-stone-700" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-6.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </svg>
+                        </div>
+                        <span class="absolute -bottom-1 -right-1 bg-song-red text-white text-[10px] px-1.5 py-0.5 rounded-sm shadow border border-amber-950 font-bold">原作者</span>
+                    </div>
+
+                    <div class="flex-1">
+                        <h3 class="text-lg font-black text-stone-800 flex items-center gap-2">
+                            梦华阁 · 邀作者《孟元老》共话汴京
+                        </h3>
+                        <p class="text-xs text-stone-600 mt-1 leading-relaxed">
+                            “老夫曾作《东京梦华录》，录盛时汴京。现代旅者若对这大宋美食、衣冠、杂剧、风土民情有所好奇，皆可向老夫求问。老夫必以宋人之见，尽心作答。”
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Chat Log area -->
+                <div id="chat-log" class="bg-[#f4edd8] rounded-lg border border-[#e5d9b8] p-4 min-h-[160px] max-h-[250px] overflow-y-auto mb-4 flex flex-col gap-3">
+                    <div class="text-xs bg-[#faf6ea] p-3 rounded border border-amber-100 self-start max-w-[85%]">
+                        <p class="font-bold text-song-red mb-1">孟元老：</p>
+                        <p class="text-stone-700 leading-relaxed">客官，今日有幸同游东京。不知你想品赏虹桥早市的美食，还是大相国寺的奇珍百宝？亦或是夜宿州桥尝尝那些冰雪冷元子？只管向老夫道来。</p>
+                    </div>
+                </div>
+
+                <!-- Chat Input Frame -->
+                <div class="flex gap-2 relative">
+                    <input type="text" id="chat-input" placeholder="向孟老提问...（例如：东京夜市有哪些冰甜点推荐？）" class="flex-1 bg-[#faf6ea] border border-song-bronze rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-song-red font-medium text-stone-800">
+                    <button onclick="askMengYuanlao()" id="chat-send-btn" class="bg-song-red hover:bg-red-800 text-white font-bold px-5 py-2 rounded text-sm transition shadow-md flex items-center gap-1.5">
+                        <span>提问</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>
+
+                    <!-- Loading animation -->
+                    <div id="chat-loader" class="absolute inset-0 bg-[#faf6ea]/80 hidden items-center justify-center gap-2 rounded">
+                        <div class="w-2.5 h-2.5 rounded-full bg-song-red ink-ripple"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-song-red ink-ripple" style="animation-delay: 0.2s"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-song-red ink-ripple" style="animation-delay: 0.4s"></div>
+                        <span class="text-xs text-stone-600 font-bold ml-1">孟元老正在研墨思索中...</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 border-t border-song-bronze bg-[#faf6ea] text-center text-xs text-stone-500">
+        <p>汴京烟火：《东京梦华录》信息可视化交互空间 © 2026</p>
+        <p class="mt-1">由 翁淑琦 (作者), 冯白帆 (指导老师) 视觉传达设计222班 原作启发重构 | 数字艺术多媒体重置版本</p>
+    </footer>
+
+    <!-- Audio Synthesis Engine for Sound effects (No files needed) -->
+    <script>
+        // Web Audio API Synth Engine
+        function playTraditionalSound(type = 'chime') {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                if (type === 'chime') {
+                    // Sounds like a bronze bell
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(783.99, ctx.currentTime); // G5 (Overtones)
+                    
+                    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+                    
+                    osc1.connect(gainNode);
+                    osc2.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    
+                    osc1.start();
+                    osc2.start();
+                    osc1.stop(ctx.currentTime + 1.2);
+                    osc2.stop(ctx.currentTime + 1.2);
+                } else if (type === 'wood') {
+                    // Sounds like a wooden block (Muyu)
+                    const osc = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.15);
+                    
+                    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.005);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+                    
+                    osc.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                } else if (type === 'cash') {
+                    // Sounds like clinking coins
+                    const osc = ctx.createOscillator();
+                    const filter = ctx.createBiquadFilter();
+                    const gainNode = ctx.createGain();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(3500, ctx.currentTime);
+                    
+                    filter.type = 'bandpass';
+                    filter.frequency.setValueAtTime(3500, ctx.currentTime);
+                    
+                    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+                    
+                    osc.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.45);
+                }
+            } catch (e) {
+                // Ignore silent audio blockages
+            }
+        }
+    </script>
+
+    <!-- State & Interaction Scripts -->
+    <script>
+        // Global variables & database based on uploaded assets
+        const state = {
+            activeChapter: 1,
+            userRole: 'merchant',
+            walletBalance: 200, // Starts based on role
+            totalExpense: 0,
+            expenseItems: [],
+        };
+
+        const roleProfiles = {
+            merchant: { name: '市井货郎 (商人)', budget: 250, desc: '钱囊薄、消费求实，钟意热食早市，日常起居多算计。' },
+            lady: { name: '大家闺秀 (仕女)', budget: 1500, desc: '家资丰足、生活精致。偏爱罗纱高价服饰、精制冷热蜜饯。' },
+            scholar: { name: '青衫书生 (文人)', budget: 500, desc: '爱雅致、求奇珍。偏好大相国寺之名墨、古玩及瓦舍清雅影戏。' },
+            youth: { name: '勾栏常客 (少年)', budget: 350, desc: '好玩乐、喜热闹。最喜于各处勾栏寻找杂技百戏，夜市拼吃。' },
+        };
+
+        // Static Infographics Database inspired directly from the images
+        const DATABASE = {
+            breakfast: [
+                { name: '王楼梅包子', price: 20, desc: '汤汁丰盈，包子皮薄褶匀，名噪东京。' },
+                { name: '曹婆婆肉饼', price: 30, desc: '酥脆多汁，百年秘制肉馅，口齿留香。' },
+                { name: '旋煎羊白肠', price: 15, desc: '现煎热腾腾，汤头鲜香四溢。' },
+                { name: '李四分茶 (名茶)', price: 8, desc: '清热解腻，市井早饭最宜搭配。' }
+            ],
+            templeMarket: [
+                { name: '潘谷名墨', price: 150, desc: '大相国寺特供，落纸如漆，经久不褪。' },
+                { name: '玉家道院散 (名药)', price: 80, desc: '道门古方，治百病咳喘。' },
+                { name: '朱家珍藏字画', price: 300, desc: '古寺僧侣收罗流传，文人雅士至爱。' },
+                { name: '相国奇玩金佛', price: 600, desc: '海外流传，镇宅庇佑。' }
+            ],
+            garments: [
+                { name: '大红绫纱袍 (朝臣服)', price: 800, desc: '顶级绫罗，红缎金绣，权贵显要御用。' },
+                { name: '销金双面绣罗裙 (贵妇)', price: 650, desc: '满绣牡丹，名重东京的“销金铺”制。' },
+                { name: '儒生青衫 (士子)', price: 120, desc: '清雅大方，士人标配。' },
+                { name: '市井麻褐 (平民)', price: 20, desc: '耐磨实用，劳动者常服。' }
+            ],
+            performances: [
+                { name: '影戏 (皮影戏门票)', price: 15, desc: '隔帐明窗，皮影栩栩如生，深受孩童喜爱。' },
+                { name: '傀儡戏 (提线木偶)', price: 20, desc: '木偶关节灵动，精妙传神，上演忠义故事。' },
+                { name: '瓦舍飞刀杂技', price: 30, desc: '惊心动魄之奇术，百戏精彩绝伦。' },
+                { name: '小杂剧门票 (名旦开场)', price: 55, desc: '说唱谈笑，汴京城最顶尖之勾栏好戏。' }
+            ],
+            nightMarket: [
+                { name: '冰雪冷元子 (夏限定)', price: 12, desc: '甘草冰水配豆沙汤圆，极上清凉，夜市消暑神品。' },
+                { name: '砂糖生淹水木瓜', price: 10, desc: '木瓜蜜渍冰镇，爽口甘甜。' },
+                { name: '旋炙鸡鸭 (烤羊肉盘)', price: 45, desc: '州桥特色明火现烤，焦香流油。' },
+                { name: '滴酥鲍螺 (奶酪甜品)', price: 25, desc: '由乳酪揉制，状如螺旋，入口即溶。' }
+            ],
+            festivals: [
+                { name: '正月元宵大花灯', price: 100, desc: '元宵夜狂欢道具，汴京御街灯山璀璨。' },
+                { name: '中秋佳节桂花酒', price: 120, desc: '望月饮酒，大醉彻夜。' },
+                { name: '重阳菊花金膏', price: 60, desc: '重阳登高祈福之用。' }
+            ]
+        };
+
+        const VISUAL_STATES = [
+            { compass: 'images/game/compass-1.png', map: 'images/game/map-state-1.png', alt: '汴京烟火汴河晨食罗盘', caption: '① 汴河晨食：州桥与汴河一带的清晨饮食动线', overview: false },
+            { compass: 'images/game/compass-2.png', map: 'images/game/map-state-2.png', alt: '汴京烟火相国万货罗盘', caption: '② 相国万货：大相国寺及周边商业聚集区', overview: false },
+            { compass: 'images/game/compass-3.png', map: 'images/game/map-state-3.png', alt: '汴京烟火锦绣衣冠罗盘', caption: '③ 锦绣衣冠：白矾楼、丰乐楼与街市人群关系', overview: false },
+            { compass: 'images/game/compass-4.png', map: 'images/game/map-state-4.png', alt: '汴京烟火瓦舍百戏罗盘', caption: '④ 瓦舍百戏：勾栏瓦舍与市民娱乐空间', overview: false },
+            { compass: 'images/game/compass-5.png', map: 'images/game/map-state-5.png', alt: '汴京烟火州桥夜食罗盘', caption: '⑤ 州桥夜食：州桥周边的夜市消费范围', overview: false },
+            { compass: 'images/game/compass-6.png', map: 'images/game/bianjing-map.png', alt: '汴京烟火岁时节序罗盘', caption: '⑥ 岁时节序：全年节令活动回到整座汴京城', overview: true }
+        ];
+
+        // Render dynamic view templates depending on chapter
+        function renderScene() {
+            const container = document.getElementById('scenic-container');
+            const ch = state.activeChapter;
+            let htmlContent = '';
+
+            // Map corresponding active indicator update
+            for(let i=1; i<=6; i++) {
+                const btn = document.getElementById(`btn-ch${i}`);
+                if(i === ch) {
+                    btn.classList.add('bg-song-red', 'text-white', 'border-song-red');
+                    btn.classList.remove('border-stone-300', 'text-stone-700', 'hover:bg-stone-50');
+                } else {
+                    btn.classList.remove('bg-song-red', 'text-white', 'border-song-red');
+                    btn.classList.add('border-stone-300', 'text-stone-700', 'hover:bg-stone-50');
+                }
+                
+                const mapChip = document.getElementById(`map-chip-${i}`);
+                if (mapChip) mapChip.classList.toggle('active', i === ch);
+            }
+
+            // Sync top header info
+            const tags = ['虹桥早市', '相国寺万货市', '白矾楼街市', '桑家瓦舍', '州桥夜市', '汴京整市'];
+            document.getElementById('active-market-tag').innerText = tags[ch - 1];
+
+            const visual = VISUAL_STATES[ch - 1];
+            const compassImage = document.getElementById('chrono-compass');
+            const mapImage = document.getElementById('bianjing-map-image');
+            const mapCaption = document.getElementById('map-caption');
+
+            if (compassImage && !compassImage.src.includes(visual.compass)) {
+                compassImage.classList.add('is-changing');
+                window.setTimeout(() => {
+                    compassImage.src = visual.compass;
+                    compassImage.alt = visual.alt;
+                    compassImage.classList.remove('is-changing');
+                }, 140);
+            }
+
+            if (mapImage && !mapImage.src.includes(visual.map)) {
+                mapImage.classList.add('is-changing');
+                window.setTimeout(() => {
+                    mapImage.src = visual.map;
+                    mapImage.alt = `${visual.alt}地图状态`;
+                    mapImage.classList.toggle('overview', visual.overview);
+                    mapImage.classList.remove('is-changing');
+                }, 140);
+            } else if (mapImage) {
+                mapImage.classList.toggle('overview', visual.overview);
+            }
+
+            if (mapCaption) mapCaption.textContent = visual.caption;
+
+            // Render specific scene layouts
+            switch(ch) {
+                case 1: // 汴河晨食
+                    htmlContent = `
+                        <div class="paper-card p-6 rounded-xl animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-song-bronze pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-song-red">① 卯时 · 汴河晨食</h3>
+                                    <p class="text-xs text-stone-500 mt-1">“晨市初开，万货云集。御街码头，早晨粥铺、肉饼、蒸笼热气腾腾。”</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-900 border border-amber-300 rounded px-2.5 py-1 text-xs font-bold">活跃时间：清晨 05:00 - 09:00</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <!-- Food interactive panel -->
+                                <div class="md:col-span-7">
+                                    <h4 class="text-sm font-bold text-stone-800 mb-3 flex items-center gap-1.5">
+                                        <span class="w-1.5 h-3 bg-song-red rounded-sm"></span>早茶热铺点单区
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        ${DATABASE.breakfast.map((item, idx) => `
+                                            <div class="bg-[#faf6ea] border border-stone-200 p-3 rounded-lg hover:border-song-red transition cursor-pointer group flex flex-col justify-between" onclick="purchaseItem('${item.name}', ${item.price}, 'breakfast')">
+                                                <div>
+                                                    <div class="flex justify-between items-start">
+                                                        <span class="font-bold text-stone-800 text-sm group-hover:text-song-red transition">${item.name}</span>
+                                                        <span class="text-xs font-black text-amber-800 bg-[#f3edd0] px-1.5 py-0.5 rounded">${item.price}文</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-stone-500 mt-1">${item.desc}</p>
+                                                </div>
+                                                <div class="mt-3 text-right">
+                                                    <span class="text-[10px] text-song-red border border-song-red px-2 py-0.5 rounded font-bold bg-white group-hover:bg-song-red group-hover:text-white transition">放入食盘</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Chart infographic of cooking complex -->
+                                <div class="md:col-span-5 bg-stone-50 p-4 rounded-lg border border-stone-200">
+                                    <h4 class="text-xs font-bold text-stone-700 border-b border-stone-200 pb-2 mb-3">早食烹饪工艺比重图 (信息图谱)</h4>
+                                    <div class="space-y-2.5">
+                                        <div>
+                                            <div class="flex justify-between text-[11px] text-stone-600 mb-0.5">
+                                                <span>煠 (Simmer) - 汤羹热粥</span>
+                                                <span class="font-bold text-stone-800">55%</span>
+                                            </div>
+                                            <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                                                <div class="bg-song-green h-full" style="width: 55%"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-[11px] text-stone-600 mb-0.5">
+                                                <span>蒸 (Steam) - 包子糕点</span>
+                                                <span class="font-bold text-stone-800">25%</span>
+                                            </div>
+                                            <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                                                <div class="bg-amber-600 h-full" style="width: 25%"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between text-[11px] text-stone-600 mb-0.5">
+                                                <span>煎 (Pan-fry) - 羊白肠/肉饼</span>
+                                                <span class="font-bold text-stone-800">15%</span>
+                                            </div>
+                                            <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                                                <div class="bg-song-red h-full" style="width: 15%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 p-2.5 bg-amber-50 rounded border border-amber-100 text-[10px] text-stone-600">
+                                        ✍️ <span class="font-bold">食俗揭秘：</span>宋人早晨不喜于家中炊煮，皆往御街码头、盘市寻早市买办。王楼梅包子每日清晨可售上千笼！
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 2: // 相国万货
+                    htmlContent = `
+                        <div class="paper-card p-6 rounded-xl animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-song-bronze pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-song-red">② 巳时 · 相国奇市万货</h3>
+                                    <p class="text-xs text-stone-500 mt-1">“大相国寺每月五次开放万姓交易。珍玩、墨宝、古字画、异域奇珍汇聚廊庑之间。”</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-900 border border-amber-300 rounded px-2.5 py-1 text-xs font-bold">活跃时间：上午 09:00 - 13:00</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <!-- Goods collection shelf -->
+                                <div class="md:col-span-7">
+                                    <h4 class="text-sm font-bold text-stone-800 mb-3 flex items-center gap-1.5">
+                                        <span class="w-1.5 h-3 bg-song-green rounded-sm"></span>廊庑百货货架
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        ${DATABASE.templeMarket.map((item, idx) => `
+                                            <div class="bg-[#faf6ea] border border-stone-200 p-3 rounded-lg hover:border-song-green transition cursor-pointer group flex flex-col justify-between" onclick="purchaseItem('${item.name}', ${item.price}, 'templeMarket')">
+                                                <div>
+                                                    <div class="flex justify-between items-start">
+                                                        <span class="font-bold text-stone-800 text-sm group-hover:text-song-green transition">${item.name}</span>
+                                                        <span class="text-xs font-black text-amber-800 bg-[#f3edd0] px-1.5 py-0.5 rounded">${item.price}文</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-stone-500 mt-1">${item.desc}</p>
+                                                </div>
+                                                <div class="mt-3 text-right">
+                                                    <span class="text-[10px] text-song-green border border-song-green px-2 py-0.5 rounded font-bold bg-white group-hover:bg-song-green group-hover:text-white transition">选购带走</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Right panel for Temple market flow chart -->
+                                <div class="md:col-span-5 bg-amber-50/50 p-4 rounded-lg border border-amber-200">
+                                    <h4 class="text-xs font-bold text-stone-700 border-b border-amber-200 pb-2 mb-3">珍奇雅物社会流转路线</h4>
+                                    <div class="space-y-3 text-[11px] text-stone-600">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-5 h-5 rounded-full bg-red-800 text-white flex items-center justify-center font-bold text-[9px]">宫</span>
+                                            <span class="font-bold">内廷赏赐</span> ➔ 贵戚豪门私藏
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-5 h-5 rounded-full bg-blue-800 text-white flex items-center justify-center font-bold text-[9px]">市</span>
+                                            <span class="font-bold">士大夫典当</span> ➔ 相国寺廊庑古玩商
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-5 h-5 rounded-full bg-green-800 text-white flex items-center justify-center font-bold text-[9px]">贾</span>
+                                            <span class="font-bold">海商贩运</span> ➔ 市民采购赏玩
+                                        </div>
+                                        <p class="text-[10px] text-stone-500 leading-normal border-t border-dashed border-amber-200 pt-2 mt-2">
+                                            ⚠️ <span class="font-bold">防坑妙招：</span>相国寺廊庑货色复杂，常有以牛角冒充犀角、劣纸假托名画之举，文人购墨需反复嗅闻试敲。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 3: // 锦绣衣冠
+                    htmlContent = `
+                        <div class="paper-card p-6 rounded-xl animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-song-bronze pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-song-red">③ 午末 · 锦绣衣冠穿搭</h3>
+                                    <p class="text-xs text-stone-500 mt-1">“士农工商，衣冠各有本色。贵贱有等级之别，亦有奢华流行之美。”</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-900 border border-amber-300 rounded px-2.5 py-1 text-xs font-bold">活跃时间：午后 11:00 - 15:00</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <!-- Costume selector -->
+                                <div class="md:col-span-7">
+                                    <h4 class="text-sm font-bold text-stone-800 mb-3 flex items-center gap-1.5">
+                                        <span class="w-1.5 h-3 bg-yellow-500 rounded-sm"></span>绫罗绸缎选购区
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        ${DATABASE.garments.map((item, idx) => `
+                                            <div class="bg-[#faf6ea] border border-stone-200 p-3 rounded-lg hover:border-amber-500 transition cursor-pointer group flex flex-col justify-between" onclick="purchaseItem('${item.name}', ${item.price}, 'garments')">
+                                                <div>
+                                                    <div class="flex justify-between items-start">
+                                                        <span class="font-bold text-stone-800 text-sm group-hover:text-amber-600 transition">${item.name}</span>
+                                                        <span class="text-xs font-black text-amber-800 bg-[#f3edd0] px-1.5 py-0.5 rounded">${item.price}文</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-stone-500 mt-1">${item.desc}</p>
+                                                </div>
+                                                <div class="mt-3 text-right">
+                                                    <span class="text-[10px] text-amber-600 border border-amber-500 px-2 py-0.5 rounded font-bold bg-white group-hover:bg-amber-500 group-hover:text-white transition">披身剪裁</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Garment restriction info -->
+                                <div class="md:col-span-5 bg-[#fdfbe9] p-4 rounded-lg border border-amber-200 flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-stone-700 border-b border-amber-200 pb-2 mb-2">宋朝冠冕阶层规制系统</h4>
+                                        <ul class="text-[11px] text-stone-600 space-y-1.5">
+                                            <li>👑 <span class="font-bold text-red-800">朝臣士大夫：</span> 须着紫、绯、绿三色。禁止民间私用织金、销金等高级绣工艺。</li>
+                                            <li>🛍️ <span class="font-bold text-stone-800">平民与商人：</span> 仅能穿白、黑、褐等暗淡色衣。富商商贾暗中用丝绸，但不能用明黄玉带。</li>
+                                            <li>💮 <span class="font-bold text-rose-700">市井仕女：</span> 流行以背子配双折裙，腰悬玉佩，发簪玉梅。</li>
+                                        </ul>
+                                    </div>
+                                    <div class="mt-4 pt-2 border-t border-amber-200">
+                                        <span class="text-[10px] text-amber-800 font-bold block">💡 衣冠趣识：</span>东京城中甚至连“卖碳翁”、“补鞋郎”都有特定装束，各行各业衣服领口、裹巾样式皆不同，让人一望即知其业。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 4: // 瓦舍百戏
+                    htmlContent = `
+                        <div class="paper-card p-6 rounded-xl animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-song-bronze pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-song-red">④ 申酉 · 勾栏瓦舍百戏</h3>
+                                    <p class="text-xs text-stone-500 mt-1">“不以风雨寒暑，诸棚看人，日日如是。杂剧、傀儡、影戏、飞刀竞技、百戏纷呈。”</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-900 border border-amber-300 rounded px-2.5 py-1 text-xs font-bold">活跃时间：下午 15:00 - 19:00</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <!-- Performance entry shop -->
+                                <div class="md:col-span-7">
+                                    <h4 class="text-sm font-bold text-stone-800 mb-3 flex items-center gap-1.5">
+                                        <span class="w-1.5 h-3 bg-blue-500 rounded-sm"></span>当日好戏选票台
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        ${DATABASE.performances.map((item, idx) => `
+                                            <div class="bg-[#faf6ea] border border-stone-200 p-3 rounded-lg hover:border-blue-500 transition cursor-pointer group flex flex-col justify-between" onclick="purchaseItem('${item.name}', ${item.price}, 'performances')">
+                                                <div>
+                                                    <div class="flex justify-between items-start">
+                                                        <span class="font-bold text-stone-800 text-sm group-hover:text-blue-600 transition">${item.name}</span>
+                                                        <span class="text-xs font-black text-amber-800 bg-[#f3edd0] px-1.5 py-0.5 rounded">${item.price}文</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-stone-500 mt-1">${item.desc}</p>
+                                                </div>
+                                                <div class="mt-3 text-right">
+                                                    <span class="text-[10px] text-blue-600 border border-blue-500 px-2 py-0.5 rounded font-bold bg-white group-hover:bg-blue-500 group-hover:text-white transition">购票入座</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Play interactive: Face Mask matching Game -->
+                                <div class="md:col-span-5 bg-stone-50 p-4 rounded-lg border border-stone-200 flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-stone-700 border-b border-stone-200 pb-2 mb-2">🎭 勾栏后台戏台：脸谱角色推测</h4>
+                                        <p class="text-[10px] text-stone-500 mb-3">点击下方戏剧连谱，猜中其代表性格即可获取免费看戏小道消息：</p>
+                                        
+                                        <div class="space-y-2">
+                                            <button onclick="checkMask('red')" class="w-full py-1.5 px-3 bg-white border border-stone-300 text-xs font-bold text-stone-700 rounded hover:border-song-red hover:bg-red-50 transition text-left flex justify-between items-center">
+                                                <span>【朱红脸谱】（象征忠烈正义，如关公）</span>
+                                                <span class="text-[10px] text-stone-400">点击断定</span>
+                                            </button>
+                                            <button onclick="checkMask('black')" class="w-full py-1.5 px-3 bg-white border border-stone-300 text-xs font-bold text-stone-700 rounded hover:border-stone-800 hover:bg-stone-100 transition text-left flex justify-between items-center">
+                                                <span>【黑浓脸谱】（象征刚正严明，如包公）</span>
+                                                <span class="text-[10px] text-stone-400">点击断定</span>
+                                            </button>
+                                            <button onclick="checkMask('white')" class="w-full py-1.5 px-3 bg-white border border-stone-300 text-xs font-bold text-stone-700 rounded hover:border-stone-400 hover:bg-stone-50 transition text-left flex justify-between items-center">
+                                                <span>【纯白脸谱】（象征奸诈权谋，如曹操）</span>
+                                                <span class="text-[10px] text-stone-400">点击断定</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="mask-feedback" class="mt-3 text-[10px] text-stone-600 italic bg-amber-50 p-2 rounded border border-amber-100 text-center">
+                                        请选择脸谱进行连线匹配...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 5: // 州桥夜市
+                    htmlContent = `
+                        <div class="paper-card p-6 rounded-xl animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-song-bronze pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-song-red">⑤ 戌亥 · 州桥通宵夜市</h3>
+                                    <p class="text-xs text-stone-500 mt-1">“州桥夜市最盛。冬月虽大风雪阴雨，亦有夜市。滴酥鲍螺、冰雪冷元子、烤羊肉香气冲天。”</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-900 border border-amber-300 rounded px-2.5 py-1 text-xs font-bold">活跃时间：晚 19:00 - 半夜 03:00</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <!-- Food interactive panel -->
+                                <div class="md:col-span-7">
+                                    <h4 class="text-sm font-bold text-stone-800 mb-3 flex items-center gap-1.5">
+                                        <span class="w-1.5 h-3 bg-purple-500 rounded-sm"></span>州桥食摊消夜
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        ${DATABASE.nightMarket.map((item, idx) => `
+                                            <div class="bg-[#faf6ea] border border-stone-200 p-3 rounded-lg hover:border-purple-500 transition cursor-pointer group flex flex-col justify-between" onclick="purchaseItem('${item.name}', ${item.price}, 'nightMarket')">
+                                                <div>
+                                                    <div class="flex justify-between items-start">
+                                                        <span class="font-bold text-stone-800 text-sm group-hover:text-purple-600 transition">${item.name}</span>
+                                                        <span class="text-xs font-black text-amber-800 bg-[#f3edd0] px-1.5 py-0.5 rounded">${item.price}文</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-stone-500 mt-1">${item.desc}</p>
+                                                </div>
+                                                <div class="mt-3 text-right">
+                                                    <span class="text-[10px] text-purple-600 border border-purple-500 px-2 py-0.5 rounded font-bold bg-white group-hover:bg-purple-500 group-hover:text-white transition">大快朵颐</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic explainer: Song Takeaway device "Wen Pan" -->
+                                <div class="md:col-span-5 bg-amber-50/60 p-4 rounded-lg border border-amber-200 flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="text-xs font-bold text-stone-700 border-b border-amber-200 pb-2 mb-2">📦 宋代外卖神器·“温盘”剖析</h4>
+                                        <p class="text-[10px] text-stone-600 leading-relaxed mb-3">
+                                            东京富户懒于下厨，常呼唤酒楼送外卖。为保食物不冷，店家特制“双层金属保温盘”。
+                                        </p>
+                                        
+                                        <!-- SVG layout schema for Wenpan -->
+                                        <svg class="w-full h-24" viewBox="0 0 200 80">
+                                            <!-- Exterior tray -->
+                                            <rect x="20" y="25" width="160" height="35" rx="5" fill="#c5a880" stroke="#7e5f35" stroke-width="1.5" />
+                                            <!-- Inner layer container -->
+                                            <rect x="28" y="25" width="144" height="15" fill="#fcf8eb" stroke="#a3332d" />
+                                            <text x="100" y="36" text-anchor="middle" class="fill-song-red text-[8px] font-bold">上层：美味肴馔 (烧烤、包子)</text>
+                                            
+                                            <!-- Water chamber -->
+                                            <rect x="28" y="44" width="144" height="12" fill="#d0ebf0" opacity="0.8" />
+                                            <text x="100" y="52" text-anchor="middle" class="fill-sky-800 text-[8px]">中下层：密封腔注入沸水保温</text>
+                                            
+                                            <!-- Explanatory lines -->
+                                            <line x1="172" y1="20" x2="160" y2="30" stroke="#a3332d" stroke-width="0.5" />
+                                            <text x="175" y="18" class="fill-stone-500 text-[7px]">铜胎镀银</text>
+                                        </svg>
+                                    </div>
+                                    <div class="mt-2 text-[9px] text-stone-500 bg-white p-2 rounded border border-amber-100">
+                                        👉 <span class="font-bold">市井纪事：</span>在州桥，甚至能买到冷水泡大蒜、生淹木瓜等怪异但极受欢迎的凉果。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 6: // 岁时节序
+                    htmlContent = `
+                        <div class="paper-card p-6 rounded-xl animate-fadeIn">
+                            <div class="flex items-center justify-between border-b border-song-bronze pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-song-red">⑥ 岁时 · 节序流转</h3>
+                                    <p class="text-xs text-stone-500 mt-1">“清明、端午、中秋、冬至、元宵。四时景物各异，市民游乐欢庆之期。”</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-900 border border-amber-300 rounded px-2.5 py-1 text-xs font-bold">岁时循环</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                                <!-- Festival shops -->
+                                <div class="md:col-span-7">
+                                    <h4 class="text-sm font-bold text-stone-800 mb-3 flex items-center gap-1.5">
+                                        <span class="w-1.5 h-3 bg-pink-500 rounded-sm"></span>岁时佳节风俗伴手礼
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        ${DATABASE.festivals.map((item, idx) => `
+                                            <div class="bg-[#faf6ea] border border-stone-200 p-3 rounded-lg hover:border-pink-500 transition cursor-pointer group flex flex-col justify-between" onclick="purchaseItem('${item.name}', ${item.price}, 'festivals')">
+                                                <div>
+                                                    <div class="flex justify-between items-start">
+                                                        <span class="font-bold text-stone-800 text-sm group-hover:text-pink-600 transition">${item.name}</span>
+                                                        <span class="text-xs font-black text-amber-800 bg-[#f3edd0] px-1.5 py-0.5 rounded">${item.price}文</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-stone-500 mt-1">${item.desc}</p>
+                                                </div>
+                                                <div class="mt-3 text-right">
+                                                    <span class="text-[10px] text-pink-600 border border-pink-500 px-2 py-0.5 rounded font-bold bg-white group-hover:bg-pink-500 group-hover:text-white transition">添购入囊</span>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Popularity index -->
+                                <div class="md:col-span-5 bg-stone-50 p-4 rounded-lg border border-stone-200">
+                                    <h4 class="text-xs font-bold text-stone-700 border-b border-stone-200 pb-2 mb-3">汴京岁时节庆人气热度分布</h4>
+                                    <div class="space-y-3 text-xs text-stone-600">
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="font-bold">🏮 正月十五元宵节</span>
+                                                <span class="text-song-red font-bold">★★★★★ (最高爆满)</span>
+                                            </div>
+                                            <p class="text-[10px] text-stone-500">放灯三夜，官府不限宵禁，全城仕女倾城出游看灯山。</p>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="font-bold">🚣 三月初一金明池开池</span>
+                                                <span class="text-amber-600 font-bold">★★★★☆ (游人如织)</span>
+                                            </div>
+                                            <p class="text-[10px] text-stone-500">皇帝御临临水殿，龙舟竞渡，市民于池畔设宴游乐。</p>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="font-bold">🎑 八月十五中秋节</span>
+                                                <span class="text-song-green font-bold">★★★★☆ (举杯欢庆)</span>
+                                            </div>
+                                            <p class="text-[10px] text-stone-500">玩月至深夜，酒楼笙歌鼎沸，琴瑟彻夜不绝。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            container.innerHTML = htmlContent;
+        }
+
+        // Action: Switch Active Chapter
+        function switchChapter(chId) {
+            state.activeChapter = chId;
+            playTraditionalSound('chime');
+            
+            // Rotate the designed compass while swapping to the matching theme artwork.
+            const compass = document.getElementById('chrono-compass');
+            const targetAngle = (chId - 1) * 60;
+            compass.style.setProperty('--compass-angle', `-${targetAngle}deg`);
+            
+            renderScene();
+        }
+
+        // Game Play logic: Check Washe masks
+        function checkMask(color) {
+            const feedback = document.getElementById('mask-feedback');
+            playTraditionalSound('wood');
+            
+            if (color === 'red') {
+                feedback.innerHTML = `<span class="text-song-red font-bold">✅ 恭喜答对！</span>朱红色脸谱多用于关云长、赵匡胤等忠臣义士，象征赤胆忠心、正气凛然。获取小道：今日勾栏大酬宾，凭此对答可省去5文茶钱！`;
+            } else if (color === 'black') {
+                feedback.innerHTML = `<span class="text-song-green font-bold">✅ 恭喜答对！</span>黑浓脸谱常代表性格刚直不阿、粗犷豪爽之猛将贤臣，如包青天。获取小道：包大人剧目甚为卖座，宜提早排队！`;
+            } else if (color === 'white') {
+                feedback.innerHTML = `<span class="text-orange-700 font-bold">✅ 恭喜答对！</span>纯白粉底脸谱多表奸诈、狐疑权谋，如曹操之流。民间杂剧对此褒贬分明，甚受欢迎！`;
+            }
+        }
+
+        // Spend calculator handlers
+        function changeRole() {
+            const role = document.getElementById('user-role').value;
+            state.userRole = role;
+            state.walletBalance = roleProfiles[role].budget;
+            playTraditionalSound('cash');
+            updateWalletUI();
+            updateExpenseList();
+        }
+
+        function purchaseItem(name, price, category) {
+            // Check if already in budget limits (optional fun aspect)
+            if (state.totalExpense + price > state.walletBalance) {
+                // Flash wallet but allow purchasing (unlimited virtual shopping, just update verdict warning!)
+            }
+            
+            state.expenseItems.push({ name, price, category });
+            state.totalExpense += price;
+            
+            playTraditionalSound('cash');
+            updateWalletUI();
+            updateExpenseList();
+        }
+
+        function clearExpense() {
+            state.expenseItems = [];
+            state.totalExpense = 0;
+            playTraditionalSound('wood');
+            updateWalletUI();
+            updateExpenseList();
+        }
+
+        function updateWalletUI() {
+            const walletSpan = document.getElementById('global-wallet');
+            const rem = state.walletBalance - state.totalExpense;
+            if (rem >= 0) {
+                walletSpan.innerHTML = `<span class="text-song-green font-bold">${rem} 文铜钱</span> / 预算 ${state.walletBalance}文`;
+                walletSpan.className = "font-bold text-song-green";
+            } else {
+                walletSpan.innerHTML = `<span class="text-song-red font-bold">超支 ${Math.abs(rem)} 文</span> / 预算 ${state.walletBalance}文`;
+                walletSpan.className = "font-bold text-song-red animate-pulse";
+            }
+        }
+
+        function updateExpenseList() {
+            const listContainer = document.getElementById('expense-list');
+            const totalSpan = document.getElementById('calc-total');
+            const verdictSpan = document.getElementById('spend-verdict');
+            const comparisonBlock = document.getElementById('buying-power-info');
+
+            totalSpan.innerText = state.totalExpense;
+
+            if (state.expenseItems.length === 0) {
+                listContainer.innerHTML = `<span class="text-xs text-stone-400 italic">空空如也，请在上方各个场景中选购美食、珍宝或门票。</span>`;
+                verdictSpan.innerText = "当前游历评定：节衣缩食，初来乍到";
+                
+                comparisonBlock.innerHTML = `
+                    <p>1文钱 ≒ 现代约 0.6 元人民币</p>
+                    <p>💰 <span class="font-bold text-amber-800">100文铜钱</span> 可吃一顿极丰盛的市井宴席。</p>
+                    <p>💼 汴京普通搬运工、轿夫一日收入约 <span class="font-bold text-amber-800">150 ~ 200文</span>。</p>
+                `;
+                return;
+            }
+
+            // Render list items
+            listContainer.innerHTML = state.expenseItems.map((item, idx) => `
+                <span class="inline-flex items-center gap-1 bg-[#f0e7cb] text-stone-800 font-bold text-xs px-2.5 py-1 rounded border border-[#dacda2] shadow-sm">
+                    ${item.name} (${item.price}文)
+                    <button onclick="removeExpenseItem(${idx})" class="text-[10px] text-stone-500 hover:text-song-red font-black ml-1">×</button>
+                </span>
+            `).join('');
+
+            // Verdict algorithm
+            let verdict = "节衣缩食，初来乍到";
+            let details = "";
+            const total = state.totalExpense;
+
+            if (total < 50) {
+                verdict = "勤俭持家 · 贫苦市井";
+                details = `<p>💸 累计消费低于50文。属于底层雇工一天的基本伙食标准。</p>`;
+            } else if (total >= 50 && total < 200) {
+                verdict = "衣食无忧 · 小康市民";
+                details = `<p>🥗 已花费约两日劳作工钱。能够品尝王楼梅包子和州桥夜市冷元子，属于汴京小康之家的悠闲开销。</p>`;
+            } else if (total >= 200 && total < 600) {
+                verdict = "风流儒雅 · 富贵雅士";
+                details = `<p>🎭 消费已达数万文铜钱。不仅常去勾栏看杂剧，还去大相国寺购置了上等潘谷墨，妥妥的名门书生派头。</p>`;
+            } else {
+                verdict = "奢靡华丽 · 豪商巨贾";
+                details = `<p>👑 消费惊人！不仅采购了销金双面绣罗裙，还收罗了大红绫纱袍及佛像古玩。此等开销非汴京顶级大商贾莫属！</p>`;
+            }
+
+            verdictSpan.innerText = `当前游历评定：${verdict}`;
+            comparisonBlock.innerHTML = `
+                <p class="font-bold text-stone-800">消费等值换算：</p>
+                <div class="space-y-1.5 mt-1">
+                    <p>现代等值：约 <span class="font-bold text-song-red">${Math.round(total * 0.6)}</span> 元人民币</p>
+                    ${details}
+                    <p class="text-[10px] text-stone-500 mt-1">当时大米价格约 6-8文/升，您今天所花已能买大米 <span class="font-bold text-stone-800">${Math.round(total/7)}</span> 升！</p>
+                </div>
+            `;
+        }
+
+        function removeExpenseItem(idx) {
+            const item = state.expenseItems[idx];
+            state.totalExpense -= item.price;
+            state.expenseItems.splice(idx, 1);
+            playTraditionalSound('wood');
+            updateWalletUI();
+            updateExpenseList();
+        }
+    </script>
+
+    <!-- Gemini AI Host Engine with Retries and Backoff -->
+    <script>
+        const apiKey = ""; // Runtime populated
+
+        // Built-in prompt generator
+        function getMengYuanlaoPrompt(userQuery) {
+            const context = `
+            【当前交互状态】
+            用户扮演的汴京角色: ${roleProfiles[state.userRole].name}
+            当前选定的汴京生活时辰: 第 ${state.activeChapter} 章 (${['卯时晨食', '巳时万货', '午末衣冠', '申酉百戏', '戌亥夜市', '岁时节序'][state.activeChapter - 1]})
+            用户当前的虚拟消费总额: ${state.totalExpense} 文铜钱
+            购买过的项目: ${state.expenseItems.map(i => i.name).join(', ') || '尚无选购'}
+
+            【你的设定】
+            你是北宋《东京梦华录》的作者孟元老。你居住在宋徽宗年间的汴京（开封），目睹了当年的极其奢华与繁荣。你现在以博学、温厚、儒雅的文人语气，带着对当年胜景的无限怀念与自豪，向现代旅行者介绍北宋东京的风物、美食、百戏、民俗。
+            请用温雅、带有一点点文言色彩的“半白话文”体裁（简体字）作答。称呼读者为“客官”、“小友”或“旅人”。
+            请在回答中，有机地结合用户“当前交互状态”（如他们选择的角色、他们刚买的特色美食如 ${state.expenseItems[0]?.name || '包子'} 等），使对话具有极强的互动感。不要长篇大论，两三段话即可，回答字数控制在200-300字内。
+            `;
+
+            return {
+                contents: [{
+                    parts: [{ text: userQuery }]
+                }],
+                systemInstruction: {
+                    parts: [{ text: context }]
+                }
+            };
+        }
+
+        // Dynamic Backoff API Call Wrapper
+        async function fetchMengYuanlaoResponse(query) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = getMengYuanlaoPrompt(query);
+
+            let delay = 1000;
+            const maxRetries = 5;
+
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) return text;
+                    throw new Error("No textual response from Gemini API");
+
+                } catch (error) {
+                    if (attempt === maxRetries - 1) {
+                        throw error; // Bubbles up after exhausting retries
+                    }
+                    // Exponential backoff
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        // Send query handler
+        async function askMengYuanlao() {
+            const inputEl = document.getElementById('chat-input');
+            const userText = inputEl.value.trim();
+            if (!userText) return;
+
+            // Render user bubbles
+            const chatLog = document.getElementById('chat-log');
+            const userBubble = document.createElement('div');
+            userBubble.className = "text-xs bg-[#e5d9b8] p-3 rounded border border-amber-200 self-end max-w-[85%] text-right";
+            userBubble.innerHTML = `
+                <p class="font-bold text-stone-700 mb-1">现代旅行者 (${roleProfiles[state.userRole].name.split(' ')[0]}):</p>
+                <p class="text-stone-800 leading-relaxed">${userText}</p>
+            `;
+            chatLog.appendChild(userBubble);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            inputEl.value = '';
+            playTraditionalSound('wood');
+
+            // Show loader
+            const loader = document.getElementById('chat-loader');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+
+            try {
+                const aiResponse = await fetchMengYuanlaoResponse(userText);
+
+                // Render AI bubble
+                const aiBubble = document.createElement('div');
+                aiBubble.className = "text-xs bg-[#faf6ea] p-3 rounded border border-amber-100 self-start max-w-[85%]";
+                aiBubble.innerHTML = `
+                    <p class="font-bold text-song-red mb-1">孟元老：</p>
+                    <p class="text-stone-700 leading-relaxed">${aiResponse}</p>
+                `;
+                chatLog.appendChild(aiBubble);
+                playTraditionalSound('chime');
+
+            } catch (err) {
+                // Friendly modal/banner feedback instead of window alert
+                const errorBubble = document.createElement('div');
+                errorBubble.className = "text-xs bg-red-50 p-3 rounded border border-red-200 self-start max-w-[85%] text-red-700";
+                errorBubble.innerHTML = `
+                    <p class="font-bold mb-1">孟元老 (执笔叹息)：</p>
+                    <p class="leading-relaxed">唉，宣德门前突降狂风，书稿飞散。老夫这一笔墨汁稍干（请求遇到阻碍，请稍后再次相询）。</p>
+                `;
+                chatLog.appendChild(errorBubble);
+            } finally {
+                loader.classList.remove('flex');
+                loader.classList.add('hidden');
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
+        }
+
+        // Support Enter key submit in chat
+        document.getElementById('chat-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                askMengYuanlao();
+            }
+        });
+    </script>
+
+    <!-- Init -->
+    <script>
+        window.onload = function() {
+            // Setup default role and load first scene
+            changeRole();
+            switchChapter(1);
+        };
+    </script>
+</body>
+</html>

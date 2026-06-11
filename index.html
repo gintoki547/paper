@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>汴京烟火：《东京梦华录》信息可视化设计</title>
+  <meta name="description" content="《汴京烟火》项目展示页：以《东京梦华录》为文本母体，将北宋汴京市民生活转译为系列信息图与互动游历体验。">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <header class="site-header" data-header>
+    <a class="brand" href="#top" aria-label="返回首页">
+      <span class="brand-seal">汴</span>
+      <span>
+        <strong>汴京烟火</strong>
+        <small>东京梦华录信息可视化设计</small>
+      </span>
+    </a>
+    <button class="nav-toggle" type="button" data-nav-toggle aria-label="打开导航">目录</button>
+    <nav class="site-nav" data-nav>
+      <a href="#logic">设计逻辑</a>
+      <a href="#works">六张信息图</a>
+      <a href="#data">数据证据</a>
+      <a href="#system">视觉系统</a>
+      <a href="#extension">延展设计</a>
+      <a href="1.html">互动游历</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-copy reveal">
+        <p class="eyebrow">古籍文本 · 数据清洗 · 视觉转译 · 互动游历</p>
+        <h1>汴京烟火</h1>
+        <p class="hero-subtitle">《东京梦华录》信息可视化设计</p>
+        <p class="hero-text">从北宋汴京的街市、桥梁、饮食、服饰、瓦舍和节令中提取线索，把分散在古籍里的城市生活重组为可阅读、可游览、可展示的视觉系统。</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#works">查看六张作品</a>
+          <a class="btn secondary" href="1.html">进入小游戏游历</a>
+        </div>
+      </div>
+      <aside class="hero-panel reveal">
+        <div class="panel-title">项目总览</div>
+        <dl class="metrics">
+          <div><dt>主作品</dt><dd>6 张</dd></div>
+          <div><dt>文本母体</dt><dd>《东京梦华录》</dd></div>
+          <div><dt>数据方向</dt><dd>空间 / 时辰 / 服饰 / 饮食 / 节庆</dd></div>
+          <div><dt>展示延展</dt><dd>展板 / 文创 / 动态 / 网站</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="section intro" id="logic">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Project Logic</p>
+        <h2>不是复古装饰，而是把古籍变成可读的城市系统</h2>
+        <p>项目以“时间推进”和“主题分层”为总框架：前五张图串联汴京一日生活，第六张图补全年节民俗，让观众从具体场景进入宋代城市文化。</p>
+      </div>
+
+      <div class="logic-grid">
+        <article class="logic-card reveal">
+          <span>01</span>
+          <h3>原典依据</h3>
+          <p>以《东京梦华录》原文为主体，结合注释本和学术研究，保留地点、时辰、人物、器物、活动等可回溯信息。</p>
+        </article>
+        <article class="logic-card reveal">
+          <span>02</span>
+          <h3>结构化整理</h3>
+          <p>将笔记体叙述拆解为空间、时辰、饮食、服饰、节庆等字段，避免只凭画面氛围进行想象式设计。</p>
+        </article>
+        <article class="logic-card reveal">
+          <span>03</span>
+          <h3>视觉转译</h3>
+          <p>用地图、罗盘、分类图表、图标和场景插画建立阅读路径，让观众知道先看什么、再理解什么。</p>
+        </article>
+        <article class="logic-card reveal">
+          <span>04</span>
+          <h3>媒介延展</h3>
+          <p>从横版信息图继续延展到纸品、龙鳞装、集章卡、钥匙扣、动态视频和网站游历，形成完整传播方案。</p>
+        </article>
+      </div>
+
+      <div class="flow reveal" data-flow>
+        <button class="flow-step active" type="button" data-flow-step="0">文本收集</button>
+        <button class="flow-step" type="button" data-flow-step="1">数据清洗</button>
+        <button class="flow-step" type="button" data-flow-step="2">图面设计</button>
+        <button class="flow-step" type="button" data-flow-step="3">展陈延展</button>
+        <div class="flow-detail" data-flow-detail>
+          <strong>文本收集</strong>
+          <p>阅读原文、注释和研究资料，摘录地点名称、时间表达、人物身份、器物名称、饮食种类、服饰形制和节庆场景。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section works" id="works">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Six Infographics</p>
+        <h2>六张信息图构成一条汴京生活动线</h2>
+        <p>所有图片均来自仓库真实成品图，不再使用空白占位。点击缩略图可切换说明，点击大图可查看放大预览。</p>
+      </div>
+
+      <div class="work-stage reveal">
+        <div class="work-viewer">
+          <button class="image-frame" type="button" data-open-work>
+            <img src="images/1.png" alt="汴京烟火·汴河晨食" data-work-image>
+          </button>
+          <div class="work-strip" data-work-tabs></div>
+        </div>
+        <article class="work-detail">
+          <p class="work-kicker" data-work-time>卯时至辰时</p>
+          <h3 data-work-title>汴河晨食</h3>
+          <p data-work-desc>以清晨饮食和沿河生活为入口，呈现汴京一天开始时的市井状态。图面将汴河、州桥、食肆、早点摊贩和晨间消费组织为可读场景。</p>
+          <dl class="work-meta">
+            <div><dt>信息重点</dt><dd data-work-focus>食物类别、经营场景、人物活动</dd></div>
+            <div><dt>图表依据</dt><dd data-work-data>饮食大类统计，主食面点、肉菜水产、果子甜饮和酒水</dd></div>
+            <div><dt>叙事作用</dt><dd data-work-role>系列开篇，从日常饮食进入北宋东京城市生活</dd></div>
+          </dl>
+          <div class="work-actions">
+            <a class="btn compact" data-work-link href="source/图一汴京烟火·汴河早食.jpg">打开高清成品图</a>
+            <a class="btn compact ghost" href="1.html">在游历页体验</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section data-section" id="data">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Data Evidence</p>
+        <h2>数据不是装饰，是作品的证据链</h2>
+        <p>仓库中的数据表对应六张信息图的不同主题，页面用摘要方式呈现字段逻辑和统计重点。</p>
+      </div>
+
+      <div class="data-layout reveal">
+        <div class="data-tabs" data-data-tabs>
+          <button class="active" type="button" data-data-key="food">饮食</button>
+          <button type="button" data-data-key="market">商贸</button>
+          <button type="button" data-data-key="clothes">服饰</button>
+          <button type="button" data-data-key="show">瓦舍</button>
+          <button type="button" data-data-key="festival">节庆</button>
+        </div>
+        <div class="data-card-large">
+          <p class="data-source" data-data-source>图一早市最终数据集 / 图5_州桥夜食_食物清单.csv</p>
+          <h3 data-data-title>饮食消费数据</h3>
+          <p data-data-desc>记录食物名称、类别、关联店铺、地理位置、营业时段、烹饪方式、温度属性和味觉分类，用于支撑晨食与夜食两张图。</p>
+          <div class="bar-list" data-data-bars></div>
+        </div>
+        <aside class="data-proof">
+          <h3>字段方法</h3>
+          <ul>
+            <li>原文摘录保留出处，保证信息可回溯。</li>
+            <li>地点、时辰、身份、器物和行为拆成字段。</li>
+            <li>统计结果只服务图面阅读，不虚构精确历史数字。</li>
+            <li>RAWGraphs、Flourish 与手绘图面共同完成视觉转译。</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section system" id="system">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Visual System</p>
+        <h2>统一的标题字、矿物色、地图和罗盘</h2>
+        <p>视觉系统保留传统文化气质，但服务信息阅读，避免停留在古风装饰。</p>
+      </div>
+      <div class="system-grid">
+        <article class="system-card reveal">
+          <img src="images/sheji.png" alt="设计系统图标">
+          <h3>字体系统</h3>
+          <p>标题字以手写书法形成识别，正文与注释强调清晰度，建立主题气质和阅读效率之间的平衡。</p>
+        </article>
+        <article class="system-card reveal">
+          <img src="images/shuju.png" alt="数据系统图标">
+          <h3>图标与图表</h3>
+          <p>桥梁、城门、酒楼、瓦舍、蒸笼、幞头等元素被转化为统一线性图标，辅助地图、分类和说明。</p>
+        </article>
+        <article class="system-card reveal">
+          <img src="images/zhanban.png" alt="展板系统图标">
+          <h3>地图与罗盘</h3>
+          <p>地图负责空间导览，罗盘负责时辰和节令提示，使六张图在横版长卷中保持连续阅读关系。</p>
+        </article>
+      </div>
+      <div class="palette reveal" aria-label="色彩系统">
+        <span style="--swatch:#7d4b2f">赭石</span>
+        <span style="--swatch:#295f64">石青</span>
+        <span style="--swatch:#4f7455">石绿</span>
+        <span style="--swatch:#a33a2c">朱砂</span>
+        <span style="--swatch:#efe3c4">蛤白</span>
+        <span style="--swatch:#2c2118">墨色</span>
+      </div>
+    </section>
+
+    <section class="section extension" id="extension">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Extensions</p>
+        <h2>从展板到可翻阅、可收藏、可互动的文创系统</h2>
+        <p>延展设计不是简单套图，而是将六张信息图中的节令、饮食、地图、标题字和人物场景转化为不同媒介。</p>
+      </div>
+
+      <div class="extension-layout reveal">
+        <div class="extension-list" data-extension-list></div>
+        <article class="extension-detail">
+          <p class="extension-type" data-extension-type>纸品延展</p>
+          <h3 data-extension-title>日历设计</h3>
+          <p data-extension-desc>将节令、人物和市井场景转化为月份纸品，保留日期功能并加入节气、花卉、饮食和人物活动。</p>
+          <p class="extension-spec" data-extension-spec>6cm×12cm 竖版长条 2 张，9cm×9cm 方形 6 张，共输出 50 张。</p>
+          <div class="extension-gallery" data-extension-gallery aria-label="文创设计图片展示"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section tour" id="tour">
+      <div class="tour-card reveal">
+        <div>
+          <p class="eyebrow">Interactive Tour</p>
+          <h2>小游戏游览页已接入</h2>
+          <p>旧项目里的 `1.html` 是完整互动游历页：它包含六时罗盘、地图切换、消费算账、宋代市井物品购买和问答式体验。新主页将它作为数字延展的重点入口。</p>
+        </div>
+        <a class="btn primary" href="1.html">开始汴京游历</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" data-modal aria-hidden="true">
+    <button class="modal-close" type="button" data-modal-close aria-label="关闭预览">关闭</button>
+    <figure>
+      <img src="images/1.png" alt="" data-modal-img>
+      <figcaption data-modal-caption>汴京烟火·汴河晨食</figcaption>
+    </figure>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
